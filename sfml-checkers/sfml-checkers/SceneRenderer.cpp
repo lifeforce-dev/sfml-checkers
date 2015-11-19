@@ -4,8 +4,11 @@
 //
 
 #include "SceneRenderer.h"
+#include "Game.h"
 
-SceneRenderer::SceneRenderer(sf::RenderTarget& target) : m_renderTarget(&target)
+SceneRenderer::SceneRenderer(sf::RenderTarget& target, Game* game)
+	: m_renderTarget(&target)
+	, m_game(game)
 {
 	BuildBoardBackground();
 }

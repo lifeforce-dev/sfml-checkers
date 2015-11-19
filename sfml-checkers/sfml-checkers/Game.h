@@ -17,6 +17,8 @@ public:
 	Game();
 	~Game();
 
+	const BoardData& GetBoardData() { return m_boardData; }
+
 private:
 	void Setup();
 	void DEBUG_PRINT_BOARD();

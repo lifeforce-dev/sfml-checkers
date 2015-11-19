@@ -4,9 +4,11 @@
 //
 
 #include "Game.h"
+
 #include <iostream>
 
-Game::Game() : m_boardData(s_boardSize, std::vector<SpaceStatus>(s_boardSize, EMPTY))
+Game::Game()
+	: m_boardData(s_boardSize, std::vector<SpaceStatus>(s_boardSize, EMPTY))
 {
 	Setup();
 }
