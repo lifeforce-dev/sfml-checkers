@@ -9,7 +9,7 @@
 
 #include <vector>
 
-typedef std::vector<std::vector<SpaceStatus>> BoardData;
+typedef std::vector<std::vector<PieceDisplayType>> BoardData;
 
 class Game
 {

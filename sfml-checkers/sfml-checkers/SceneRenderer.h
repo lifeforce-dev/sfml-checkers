@@ -22,6 +22,7 @@ public:
 private:
 	void BuildBoardBackground();
 	void DrawBoardBackground();
+	void DrawBoardPieces();
 
 	sf::RenderTarget* m_renderTarget;
 	std::vector<sf::RectangleShape> m_boardBackground;

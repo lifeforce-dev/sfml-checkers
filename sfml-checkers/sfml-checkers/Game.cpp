@@ -8,7 +8,7 @@
 #include <iostream>
 
 Game::Game()
-	: m_boardData(s_boardSize, std::vector<SpaceStatus>(s_boardSize, EMPTY))
+	: m_boardData(s_boardSize, std::vector<PieceDisplayType>(s_boardSize, EMPTY))
 {
 	Setup();
 }
