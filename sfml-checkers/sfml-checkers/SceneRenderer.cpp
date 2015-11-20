@@ -19,6 +19,31 @@ SceneRenderer::~SceneRenderer()
 {
 }
 
+void SceneRenderer::Draw()
+{
+	m_renderTarget->clear();
+
+	DrawBoardBackground();
+	DrawBoardPieces();
+}
+
+void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
+{
+	// TODO:
+	// On setup.
+	// Store all of the clickable spaces and associate with an array index
+
+	// On click.
+	// If this space has a piece.
+		// Select it
+		// Populate that pieces possible moves.
+	// If a space is selected
+		// <in game logic, not in UI>
+		// If new space is a valid move.
+			// Move piece.
+			// Deselect all
+}
+
 void SceneRenderer::BuildBoardBackground()
 {
 	std::vector<sf::Color> colorPalette(s_boardSize);
@@ -111,12 +136,4 @@ void SceneRenderer::ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::Circl
 		// it is added to this switch.
 		assert(0);
 	}
-}
-
-void SceneRenderer::Draw()
-{
-	m_renderTarget->clear();
-
-	DrawBoardBackground();
-	DrawBoardPieces();
 }

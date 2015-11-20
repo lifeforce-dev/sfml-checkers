@@ -18,6 +18,7 @@ public:
 	~SceneRenderer();
 
 	void Draw();
+	void OnMouseClick(sf::Vector2i localPosition);
 
 private:
 	void BuildBoardBackground();

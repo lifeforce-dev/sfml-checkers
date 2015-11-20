@@ -4,6 +4,7 @@
 //
 
 #include "AppController.h"
+#include <iostream>
 
 AppController::AppController()
 	: m_mainWindow(sf::VideoMode(800, 800), "Checkers")
@@ -37,5 +38,10 @@ void AppController::ProcessEvents()
 	{
 		if (event.type == sf::Event::Closed)
 			m_mainWindow.close();
+
+		if (event.type == sf::Event::MouseButtonPressed)
+		{
+			m_sceneRenderer.OnMouseClick(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+		}
 	}
 }
