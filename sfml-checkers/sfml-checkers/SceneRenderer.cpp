@@ -23,7 +23,7 @@ void SceneRenderer::BuildBoardBackground()
 {
 	std::vector<sf::Color> colorPalette(s_boardSize);
 
-	bool colorToggle = false;
+	bool colorToggle = true;
 	std::generate_n(colorPalette.begin(), s_boardSize, [colorToggle] () mutable {
 
 		// Alternate colors.
@@ -79,31 +79,37 @@ void SceneRenderer::DrawBoardPieces()
 			piece.setPosition(xBorderPadding + ((s_pieceSize + xPieceSpacing) * columnNumber),
 				yBorderPadding + ((s_pieceSize + yPieceSpacing) * rowNumber));
 
-			switch (*col)
-			{
-			case BLACK:
-				piece.setFillColor(sf::Color(90, 53, 44, 255));
-				break;
-			case WHITE:
-				piece.setFillColor(sf::Color(246, 221, 190, 255));
-				break;
-			case BLACK_KING:
-				// TODO
-				break;
-			case WHITE_KING:
-				// TODOk
-				break;
-			case EMPTY:
-				// Do not draw blank spaces.
-				continue;
-			default:
-				// This should never be the case. If we do have an unknown piece type, I am enforcing that
-				// it is added to this switch.
-				assert(0);
-			}
+			ApplyPieceColor(*col, piece);
 
 			m_renderTarget->draw(piece);
 		}
+	}
+}
+
+void SceneRenderer::ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::CircleShape& piece)
+{
+	switch (pieceDisplayType)
+	{
+	case BLACK:
+		piece.setFillColor(sf::Color(90, 53, 44, 255));
+		break;
+	case WHITE:
+		piece.setFillColor(sf::Color(246, 221, 190, 255));
+		break;
+	case BLACK_KING:
+		// TODO
+		break;
+	case WHITE_KING:
+		// TODO
+		break;
+	case EMPTY:
+		// Do not draw blank spaces.
+		piece.setFillColor(sf::Color(0, 0, 0, 0));
+		break;
+	default:
+		// This should never be the case. If we do have an unknown piece type, I am enforcing that
+		// it is added to this switch.
+		assert(0);
 	}
 }
 

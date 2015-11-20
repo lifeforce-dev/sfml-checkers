@@ -24,6 +24,8 @@ private:
 	void DrawBoardBackground();
 	void DrawBoardPieces();
 
+	void ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::CircleShape& piece);
+
 	sf::RenderTarget* m_renderTarget;
 	std::vector<sf::RectangleShape> m_boardBackground;
 	Game* m_game;

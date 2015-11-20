@@ -19,34 +19,19 @@ Game::~Game()
 
 void Game::Setup()
 {
-	for (int row = 0; row < s_boardSize; row++) {
-
-		for (int col = 0; col < s_boardSize; col++) {
-
-			int rowMod = row % 2;
-			int colMod = col % 2;
-
-			// Indicates that we are on the correct diagonal
-			if (rowMod == colMod)
+	for (int row = 0; row < s_boardSize; ++row)
+	{
+		for (int col = 0; col < s_boardSize; ++col)
+		{
+			// Find the right diagonal
+			if ((row + col) % 2)
 			{
-				// If we're in the top three rows place black pieces.
-				if (row < 3)
-				{
+				if (row > 4)
 					m_boardData[row][col] = BLACK;
-				}
-				// Or the bottom three rows place white pieces.
-				else if (row > 4)
-				{
+				else if (row < 3)
 					m_boardData[row][col] = WHITE;
-				}
 				else
-				{
 					m_boardData[row][col] = EMPTY;
-				}
-			}
-			else
-			{
-				m_boardData[row][col] = EMPTY;
 			}
 		}
 	}
