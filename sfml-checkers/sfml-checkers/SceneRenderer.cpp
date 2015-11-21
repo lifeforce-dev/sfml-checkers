@@ -5,6 +5,7 @@
 
 #include "SceneRenderer.h"
 #include "Game.h"
+#include <iostream>
 
 #include <assert.h>
 
@@ -29,19 +30,7 @@ void SceneRenderer::Draw()
 
 void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
 {
-	// TODO:
-	// On setup.
-	// Store all of the clickable spaces and associate with an array index
 
-	// On click.
-	// If this space has a piece.
-		// Select it
-		// Populate that pieces possible moves.
-	// If a space is selected
-		// <in game logic, not in UI>
-		// If new space is a valid move.
-			// Move piece.
-			// Deselect all
 }
 
 void SceneRenderer::BuildBoardBackground()
@@ -66,7 +55,8 @@ void SceneRenderer::BuildBoardBackground()
 			currentSquare.setPosition(row * s_squareSize, col * s_squareSize);
 			currentSquare.setFillColor(colorPalette[col]);
 
-			m_boardBackground.push_back(currentSquare);
+			CheckersSquare square(currentSquare, m_game->GetBoardIndexFromRowCol(row, col));
+			m_checkersSquares.push_back(square);
 		}
 
 		// Reverse the color palette to make the checker effect.
@@ -76,9 +66,9 @@ void SceneRenderer::BuildBoardBackground()
 
 void SceneRenderer::DrawBoardBackground()
 {
-	for (auto it = m_boardBackground.begin(); it != m_boardBackground.end(); ++it)
+	for (auto it = m_checkersSquares.begin(); it != m_checkersSquares.end(); ++it)
 	{
-		m_renderTarget->draw(*it);
+		m_renderTarget->draw(it->m_square);
 	}
 }
 
@@ -136,4 +126,12 @@ void SceneRenderer::ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::Circl
 		// it is added to this switch.
 		assert(0);
 	}
+}
+
+//--------------------------------------------------------------------------------------------------------
+
+CheckersSquare::CheckersSquare(const sf::RectangleShape& square, const std::pair<int, int>& boardIndex)
+	: m_square(square)
+	, m_boardIndex(boardIndex)
+{
 }

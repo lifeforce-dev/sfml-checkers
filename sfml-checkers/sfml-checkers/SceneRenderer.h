@@ -8,8 +8,10 @@
 #include "CheckersTypes.h"
 
 #include <SFML/Graphics.hpp>
+#include <unordered_map>
 
 class Game;
+struct CheckersSquare;
 
 class SceneRenderer
 {
@@ -28,6 +30,17 @@ private:
 	void ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::CircleShape& piece);
 
 	sf::RenderTarget* m_renderTarget;
-	std::vector<sf::RectangleShape> m_boardBackground;
+	std::vector<CheckersSquare> m_checkersSquares;
 	Game* m_game;
+};
+
+struct CheckersSquare
+{
+	CheckersSquare(const sf::RectangleShape& square, const std::pair<int, int>& boardIndex);
+
+	// The drawable representation of the CheckersSquare.
+	sf::RectangleShape m_square;
+
+	// Where on the board is this square in row, col.
+	std::pair<int, int> m_boardIndex;
 };

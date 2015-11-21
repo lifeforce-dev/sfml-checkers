@@ -18,6 +18,7 @@ public:
 	~Game();
 
 	const BoardData& GetBoardData() { return m_boardData; }
+	std::pair<int, int> GetBoardIndexFromRowCol(int row, int col);
 
 private:
 	void Setup();

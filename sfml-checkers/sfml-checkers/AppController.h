@@ -21,6 +21,6 @@ public:
 
 private:
 	sf::RenderWindow m_mainWindow;
-	SceneRenderer m_sceneRenderer;
 	Game m_game;
+	SceneRenderer m_sceneRenderer;
 };

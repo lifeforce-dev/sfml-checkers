@@ -124,6 +124,7 @@
   <ItemGroup>
     <ClCompile Include="AppController.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
   </ItemGroup>
@@ -131,6 +132,7 @@
     <ClInclude Include="AppController.h" />
     <ClInclude Include="CheckersTypes.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="SceneRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
