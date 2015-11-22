@@ -20,8 +20,8 @@ std::pair<int, int> Game::GetBoardIndexFromRowCol(int row, int col)
 {
 	if (row < 0 || row >= s_boardSize || col < 0 || col >= s_boardSize)
 	{
-		Logger::LogDebugMessage("Error: attempt to access invalid index"
-			+ std::to_string(row) + " , " + std::to_string(col), Logger::CONSOLE);
+		LOG_DEBUG_CONSOLE("Error: attempt to access invalid index" + std::to_string(row)
+			+ " , " + std::to_string(col));
 		return std::pair<int, int>();
 	}
 

@@ -63,38 +63,27 @@ void AddMessageGuards(std::string& message)
 	message = ss.str();
 }
 
-void AppendLoggingInfoToLog(std::string& message)
+void AppendLoggingInfoToLog(const std::string& fileName, int lineNumber, std::string& messageOut)
 {
 	std::stringstream ss;
-	ss << message;
-	ss << " " << __FILE__;
-	ss << " (" << __LINE__ << ")";
-	message = ss.str();
-}
-
-void LogMessageToConsole(const std::string& message)
-{
-	Logger::LogDebugMessage(message, Logger::CONSOLE);
-}
-
-void LogMessageToDebugWindow(const std::string& message)
-{
-	Logger::LogDebugMessage(message, Logger::DEBUG_WINDOW);
+	ss << messageOut;
+	ss << " " << fileName;
+	ss << " (" << lineNumber << ")";
+	messageOut = ss.str();
 }
 
 //==============================================================================
 
 } // anonymous namespace
 
-void Logger::LogDebugMessage(const std::string& message, MessageType messageType)
+void Logger::LogDebugMessage(const std::string& message, LogSink messageType,
+	const char* fileName, int lineNumber)
 {
 	if (message.empty())
 		return;
 
 	std::string guardedMessage = message;
-	AppendLoggingInfoToLog(guardedMessage);
-	WrapMessage(guardedMessage);
-	AddMessageGuards(guardedMessage);
+	AppendLoggingInfoToLog(fileName, lineNumber, guardedMessage);
 
 	switch (messageType)
 	{
