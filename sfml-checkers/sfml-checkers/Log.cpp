@@ -65,10 +65,18 @@ void AddMessageGuards(std::string& message)
 
 void AppendLoggingInfoToLog(const std::string& fileName, int lineNumber, std::string& messageOut)
 {
+	// Remove full path from the filename.
+	std::string strippedFilename;
+	size_t i = fileName.rfind('\\');
+	if (i != std::string::npos)
+	{
+		strippedFilename = fileName.substr(i + 1, fileName.length());
+	}
+
 	std::stringstream ss;
 	ss << messageOut;
-	ss << " " << fileName;
-	ss << " (" << lineNumber << ")";
+	ss << " <" << strippedFilename;
+	ss << "> (" << lineNumber << ")\n";
 	messageOut = ss.str();
 }
 
