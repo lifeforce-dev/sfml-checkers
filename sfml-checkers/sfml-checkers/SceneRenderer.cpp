@@ -5,7 +5,7 @@
 
 #include "SceneRenderer.h"
 #include "Game.h"
-#include <iostream>
+#include "Log.h"
 
 #include <assert.h>
 
@@ -30,7 +30,22 @@ void SceneRenderer::Draw()
 
 void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
 {
+	float localX = static_cast<float>(localPosition.x);
+	float localY = static_cast<float>(localPosition.y);
+	LOG_DEBUG_OUTPUT_WINDOW("Mouse button Clicked: (" + std::to_string(localX) + " , "
+		+ std::to_string(localY) + ") ");
 
+	auto it = std::find_if(m_checkersSquares.begin(), m_checkersSquares.end(),
+		[this, &localX, &localY](const CheckersSquare& currentSquare) {
+
+		return currentSquare.m_square.getGlobalBounds().contains(localX, localY);
+	});
+
+	if (it == m_checkersSquares.end())
+	{
+		LOG_DEBUG_OUTPUT_WINDOW("Failed to find a valid location.");
+		return;
+	}
 }
 
 void SceneRenderer::BuildBoardBackground()
@@ -130,7 +145,7 @@ void SceneRenderer::ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::Circl
 
 //--------------------------------------------------------------------------------------------------------
 
-CheckersSquare::CheckersSquare(const sf::RectangleShape& square, const std::pair<int, int>& boardIndex)
+CheckersSquare::CheckersSquare(const sf::RectangleShape square, const BoardIndex& boardIndex)
 	: m_square(square)
 	, m_boardIndex(boardIndex)
 {

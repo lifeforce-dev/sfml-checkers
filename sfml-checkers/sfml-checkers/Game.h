@@ -7,9 +7,14 @@
 
 #include "CheckersTypes.h"
 
-#include <vector>
+struct CheckersMove
+{
+	CheckersMove();
+	~CheckersMove();
 
-typedef std::vector<std::vector<PieceDisplayType>> BoardData;
+	BoardIndex m_moveStart;
+	BoardIndex m_moveFinish;
+};
 
 class Game
 {
@@ -18,11 +23,16 @@ public:
 	~Game();
 
 	const BoardData& GetBoardData() { return m_boardData; }
-	std::pair<int, int> GetBoardIndexFromRowCol(int row, int col);
+	BoardIndex GetBoardIndexFromRowCol(int row, int col) const;
+
+	void OnMoveEvent(const BoardIndex& boardIndex);
 
 private:
 	void Setup();
+	bool IsValidBoardIndex(const BoardIndex& boardIndex) const;
+
 	void DEBUG_PRINT_BOARD();
 
 	BoardData m_boardData;
+	CheckersMove m_pendingMove;
 };

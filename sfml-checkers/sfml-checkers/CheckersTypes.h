@@ -4,6 +4,7 @@
 //
 
 #pragma once
+#include <vector>
 
 namespace {
 	const float s_squareSize = 100.0f;
@@ -19,3 +20,6 @@ enum PieceDisplayType
 	WHITE_KING,
 	EMPTY,
 };
+
+typedef std::vector<std::vector<PieceDisplayType>> BoardData;
+typedef std::pair<int, int> BoardIndex;

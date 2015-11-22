@@ -8,7 +8,6 @@
 #include "CheckersTypes.h"
 
 #include <SFML/Graphics.hpp>
-#include <unordered_map>
 
 class Game;
 struct CheckersSquare;
@@ -36,11 +35,11 @@ private:
 
 struct CheckersSquare
 {
-	CheckersSquare(const sf::RectangleShape& square, const std::pair<int, int>& boardIndex);
+	CheckersSquare(const sf::RectangleShape square, const BoardIndex& boardIndex);
 
 	// The drawable representation of the CheckersSquare.
 	sf::RectangleShape m_square;
 
 	// Where on the board is this square in row, col.
-	std::pair<int, int> m_boardIndex;
+	BoardIndex m_boardIndex;
 };

@@ -16,16 +16,18 @@ Game::~Game()
 {
 }
 
-std::pair<int, int> Game::GetBoardIndexFromRowCol(int row, int col)
+BoardIndex Game::GetBoardIndexFromRowCol(int row, int col) const
 {
-	if (row < 0 || row >= s_boardSize || col < 0 || col >= s_boardSize)
-	{
-		LOG_DEBUG_CONSOLE("Error: attempt to access invalid index" + std::to_string(row)
-			+ " , " + std::to_string(col));
-		return std::pair<int, int>();
-	}
+	if (!IsValidBoardIndex(std::make_pair(row, col)))
+		return BoardIndex();
 
 	return std::make_pair(row, col);
+}
+
+void Game::OnMoveEvent(const BoardIndex& boardIndex)
+{
+	if (!IsValidBoardIndex(boardIndex))
+		return;
 }
 
 void Game::Setup()
@@ -48,7 +50,21 @@ void Game::Setup()
 	}
 }
 
-//-----------------------------------------------------------------------------
+bool Game::IsValidBoardIndex(const BoardIndex& boardIndex) const
+{
+	int row = boardIndex.first;
+	int col = boardIndex.second;
+
+	bool isValid = row >= 0 || row < s_boardSize || col >= 0 || col < s_boardSize;
+
+	if (!isValid)
+	{
+		LOG_DEBUG_CONSOLE("Error: attempt to access invalid index" + std::to_string(row)
+			+ " , " + std::to_string(col));
+	}
+
+	return isValid;
+}
 
 void Game::DEBUG_PRINT_BOARD()
 {
@@ -79,4 +95,16 @@ void Game::DEBUG_PRINT_BOARD()
 		}
 		std::cout << "\n";
 	}
+}
+
+//---------------------------------------------------------------
+
+CheckersMove::CheckersMove()
+{
+
+}
+
+CheckersMove::~CheckersMove()
+{
+
 }
