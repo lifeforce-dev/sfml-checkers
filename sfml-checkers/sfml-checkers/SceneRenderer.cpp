@@ -35,11 +35,15 @@ void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
 	LOG_DEBUG_OUTPUT_WINDOW("Mouse button Clicked: (" + std::to_string(localX) + " , "
 		+ std::to_string(localY) + ") ");
 
+	// Find the square that I clicked
 	auto it = std::find_if(m_checkersSquares.begin(), m_checkersSquares.end(),
 		[this, &localX, &localY](const CheckersSquare& currentSquare) {
 
 		return currentSquare.m_square.getGlobalBounds().contains(localX, localY);
 	});
+
+	// Notify game of a move selection event
+	m_game->OnMoveSelectionEvent(it->m_boardIndex);
 
 	if (it == m_checkersSquares.end())
 	{

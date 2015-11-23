@@ -6,8 +6,11 @@
 #include "Game.h"
 #include "Log.h"
 
+#include <assert.h>
+
 Game::Game()
 	: m_boardData(s_boardSize, std::vector<PieceDisplayType>(s_boardSize, EMPTY))
+	, m_pendingMoveLauncher(new CheckersMoveLauncher(std::bind(&Game::OnMoveSelectionFinalized, this)))
 {
 	Setup();
 }
@@ -24,10 +27,16 @@ BoardIndex Game::GetBoardIndexFromRowCol(int row, int col) const
 	return std::make_pair(row, col);
 }
 
-void Game::OnMoveEvent(const BoardIndex& boardIndex)
+void Game::OnMoveSelectionEvent(const BoardIndex& boardIndex)
 {
-	if (!IsValidBoardIndex(boardIndex))
-		return;
+	assert(IsValidBoardIndex(boardIndex));
+
+	m_pendingMoveLauncher->HandleMoveSelected(boardIndex);
+}
+
+void Game::OnMoveSelectionFinalized()
+{
+	m_pendingMoveLauncher.reset(new CheckersMoveLauncher(std::bind(&Game::OnMoveSelectionFinalized, this)));
 }
 
 void Game::Setup()
@@ -36,7 +45,7 @@ void Game::Setup()
 	{
 		for (int col = 0; col < s_boardSize; ++col)
 		{
-			// Find the right diagonal
+			// Find the correct diagonal.
 			if ((row + col) % 2)
 			{
 				if (row > 4)
@@ -99,12 +108,52 @@ void Game::DEBUG_PRINT_BOARD()
 
 //---------------------------------------------------------------
 
-CheckersMove::CheckersMove()
+CheckersMoveLauncher::CheckersMoveLauncher(std::function<void()> launchMoveCallback)
+	: m_moveSource(-1, -1)
+	, m_moveDestination(-1, -1)
+	, m_isSourceSet(false)
+	, m_isDestinationSet(false)
+	, m_launchMoveCallback(launchMoveCallback)
 {
-
 }
 
-CheckersMove::~CheckersMove()
+CheckersMoveLauncher::~CheckersMoveLauncher()
 {
+}
 
+void CheckersMoveLauncher::HandleMoveSelected(const BoardIndex& move)
+{
+	if (m_isDestinationSet)
+	{
+		assert(m_isSourceSet);
+
+		LOG_DEBUG_CONSOLE("Warning: This move already has a source and a destination.");
+		return;
+	}
+
+	// The first selected move is the source.
+	if (!m_isSourceSet)
+	{
+		m_moveSource = move;
+		m_isSourceSet = true;
+	}
+	else
+	{
+		// Next is the destination.
+		m_moveDestination = move;
+		m_isDestinationSet = true;
+
+		// Ready to move, launch!
+		m_launchMoveCallback();
+	}
+}
+
+const BoardIndex& CheckersMoveLauncher::GetMoveSource() const
+{
+	return m_moveSource;
+}
+
+const BoardIndex& CheckersMoveLauncher::GetMoveDestination() const
+{
+	return m_moveDestination;
 }
