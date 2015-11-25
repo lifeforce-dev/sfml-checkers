@@ -11,9 +11,21 @@
 #include <functional>
 
 class CheckersMoveLauncher;
+struct CheckersMove;
 
-// Source to destination.
-typedef std::pair<BoardIndex, BoardIndex> CheckersMove;
+struct Vector2D
+{
+	Vector2D(int y, int x)
+		: m_y(y)
+		, m_x(x)
+	{
+	}
+
+	int m_x;
+	int m_y;
+};
+
+//---------------------------------------------------------------
 
 class Game
 {
@@ -29,25 +41,43 @@ public:
 	// Called in response to the UI reporting that a player made a selection.
 	void OnMoveSelectionEvent(const BoardIndex& boardIndex);
 
+private:
 	// This is called from the CheckersMoveLauncher when the move destination is selected.
 	// This will reset the CheckersMoveLauncher unconditionally, and attempt to move.
-	void OnMoveSelectionFinalized();
+	void OnLaunchMove();
 
-private:
 	// Setup pieces in initial position and other initialization activities.
 	void Setup();
 
-	// For the current player, generate a list of all legal move possibilities.
-	void PopulateLegalCurrentMoves();
+	// Will actually move the piece.
+	void MovePiece(const CheckersMove& move);
 
-	// Returns whether the index is a valid board index.
+	// Will jump the piece, capture the piece, and look for further jumps.
+	void JumpPiece(const CheckersMove& move);
+
+	// This will toggle player turns.
+	void SwitchTurns();
+
+	// Reran per turn. Contains all possible moves of a player.
+	void PopulateLegalTurnMoves();
+
+	// Returns whether the index is within the bounds of the board.
 	bool IsValidBoardIndex(const BoardIndex& boardIndex) const;
 
-	// Returns whether the move is legal according to checkers moves.
+	// Returns whether the move is available in the legal move list.
 	bool IsLegalMove(const CheckersMove& move) const;
+
+	// Returns whether the move is available in the legal jump list.
+	bool IsLegalJump(const CheckersMove& move) const;
 
 	// Returns whether the specified index contains a piece.
 	bool ContainsPiece(const BoardIndex& boardIndex) const;
+
+	// Returns whether the specified index contains a piece of the current player's turn.
+	bool ContainsPlayerPiece(const BoardIndex& boardIndex) const;
+
+	// Returns whether the specified index contains a piece of the enemy of the current player's turn.
+	bool ContainsEnemyPiece(const BoardIndex& boardIndex) const;
 
 	// Returns whether the specified piece belongs to the player whose turn it currently is.
 	bool IsPieceOfCurrentPlayer(PieceDisplayType piece) const;
@@ -56,12 +86,22 @@ private:
 	void EvaluatePossibleMovesForIndex(const BoardIndex& pieceIndex);
 
 	// Given a direction, will add a move to the appropriate list if it is valid.
-	void AddValidMovesForDirection(const BoardIndex& currentPosition, int verticalDirection,
+	void AddValidMoveForDirection(const BoardIndex& currentPosition, int verticalDirection,
 		int horizontalDirection);
 
 	// Given a direction, will add a valid jump to the jump list.
 	void AddValidJumpForDirection(const BoardIndex& currentPosition, int verticalDirection,
 		int horizontalDirection);
+
+	// Given a jump, will try and assemble the next jump in the chain if one exists.
+	void AddValidJumpsFromJump(const CheckersMove& currentMove, int verticalDirection,
+		int horizontalDirection);
+
+	// Will translate a move which is one space ahead.
+	BoardIndex GetTranslatedMove(const BoardIndex& source, int verticalDirection, int horizontalDirection);
+
+	// Will translate a jump which is two spaces ahead.
+	BoardIndex GetTranslatedJump(const BoardIndex& source, int verticalDirection, int horizontalDirection);
 
 	// Will return a string representation of a BaordIndex.
 	std::string BoardIndexToString(const BoardIndex& index) const;
@@ -69,19 +109,9 @@ private:
 	// Returns PieceDisplayType for given index.
 	PieceDisplayType GetPieceForIndex(const BoardIndex& index) const;
 
-	// Given a source and a destination will return a CheckersMove.
-	CheckersMove GetCheckersMove(const BoardIndex& sourceIndex, const BoardIndex& destinationIndex) const;
-
-	// Will actually move the piece and take care of cleaning up dead pieces/promotions.
-	void MovePiece();
-
-	// Called in response to a piece successfully moving.
-	void OnPieceMoved();
-
-	// This will toggle player turns
-	void SwitchTurns();
-
-	void DEBUG_PRINT_BOARD();
+	// Will construct and return a CheckersMove.
+	CheckersMove CreateCheckersMove(const BoardIndex& sourceIndex,
+		const BoardIndex& destinationIndex) const;
 
 	// Contains every movable index and what type of piece if any is there.
 	BoardData m_boardData;
@@ -96,8 +126,29 @@ private:
 	std::vector<CheckersMove> m_legalJumpDestinations;
 
 	// Toggle value. If it is not white player's turn, it is black players turn.
-	bool m_whitePlayerTurn;
+	bool m_isWhitePlayerTurn;
 };
+
+//---------------------------------------------------------------
+
+struct CheckersMove
+{
+	CheckersMove(BoardIndex source, BoardIndex destination, int verticalDirection = 0,
+		int horizontalDirection = 0);
+
+	BoardIndex m_moveSource;
+	BoardIndex m_moveDestination;
+
+	// For simplicity, we store the direction of the move to easily be able to clear pieces
+	// and look for further jumps. We could figure this out but why not just store it.
+	int m_verticalDirection;
+	int m_horizontalDirection;
+	int m_rowDistance;
+	int m_columnDistance;
+	int m_moveLength;
+};
+
+//---------------------------------------------------------------
 
 class CheckersMoveLauncher
 {
@@ -110,10 +161,15 @@ public:
 
 	const BoardIndex& GetMoveSource() const;
 	const BoardIndex& GetMoveDestination() const;
+	const CheckersMove& GetCheckersMove() const;
 
 	bool IsSourceSet() const;
 
 private:
+	void SetMoveDirection();
+	void SetMoveLength();
+	void SetMoveDistance();
+
 	CheckersMove m_checkersMove;
 
 	bool m_isSourceSet;
