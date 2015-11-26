@@ -70,6 +70,9 @@ private:
 	// Returns whether the move is available in the legal jump list.
 	bool IsLegalJump(const CheckersMove& move) const;
 
+	// Returns whether the move results in a kingable position.
+	bool IsKingableIndex(const BoardIndex& move) const;
+
 	// Returns whether the specified index contains a piece.
 	bool ContainsPiece(const BoardIndex& boardIndex) const;
 
@@ -108,6 +111,9 @@ private:
 
 	// Returns PieceDisplayType for given index.
 	PieceDisplayType GetPieceForIndex(const BoardIndex& index) const;
+
+	// Returns the appropriate piece for the destination of the move that was given.
+	PieceDisplayType GetPieceForMove(const CheckersMove& move) const;
 
 	// Will construct and return a CheckersMove.
 	CheckersMove CreateCheckersMove(const BoardIndex& sourceIndex,

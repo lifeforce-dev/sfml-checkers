@@ -73,7 +73,8 @@ void Game::OnLaunchMove()
 	{
 		JumpPiece(move);
 	}
-	// We are not allowed to move is a jump is available.
+
+	// We are not allowed to move if a jump is available.
 	else if (IsLegalMove(move) && !isJumpAvailable)
 	{
 		MovePiece(move);
@@ -115,7 +116,7 @@ void Game::MovePiece(const CheckersMove& currentMove)
 	const BoardIndex& destination(currentMove.m_moveDestination);
 
 	// Move the source piece to the destination.
-	m_boardData[destination.first][destination.second] = GetPieceForIndex(currentMove.m_moveSource);
+	m_boardData[destination.first][destination.second] = GetPieceForMove(currentMove);
 
 	// Clear previous spot.
 	m_boardData[source.first][source.second] = EMPTY;
@@ -137,7 +138,7 @@ void Game::JumpPiece(const CheckersMove& currentMove)
 	BoardIndex middleOfJumpIndex = GetTranslatedMove(source, direction.m_y, direction.m_x);
 
 	// Move the source piece to the destination.
-	m_boardData[destination.first][destination.second] = GetPieceForIndex(currentMove.m_moveSource);
+	m_boardData[destination.first][destination.second] = GetPieceForMove(currentMove);
 
 	// Clear source spot.
 	m_boardData[source.first][source.second] = EMPTY;
@@ -210,7 +211,6 @@ bool Game::IsLegalMove(const CheckersMove& move) const
 	});
 }
 
-
 bool Game::IsLegalJump(const CheckersMove& move) const
 {
 	return std::any_of(m_legalJumpDestinations.begin(), m_legalJumpDestinations.end(),
@@ -218,6 +218,13 @@ bool Game::IsLegalJump(const CheckersMove& move) const
 		return move.m_moveSource == currentMove.m_moveSource
 			&& move.m_moveDestination == currentMove.m_moveDestination;
 	});
+}
+
+bool Game::IsKingableIndex(const BoardIndex& boardIndex) const
+{
+	// If we are within the first or last row, we are kingable.
+	return (boardIndex.first == 0 && boardIndex.second >= 0 && boardIndex.second < s_boardSize)
+		|| (boardIndex.first == s_boardSize - 1 && boardIndex.first >= 0 && boardIndex.first < s_boardSize);
 }
 
 bool Game::ContainsPiece(const BoardIndex& boardIndex) const
@@ -323,21 +330,28 @@ void Game::AddValidJumpForDirection(const BoardIndex& currentPosition, int verti
 void Game::AddValidJumpsFromJump(const CheckersMove& currentMove,
 	int verticalDirection, int horizontalDirection)
 {
+	// TODO: Refactor this function to remove code duplication and unnecessary operations.
+
 	Vector2D direction(currentMove.m_verticalDirection, currentMove.m_horizontalDirection);
 	const BoardIndex& destination(currentMove.m_moveDestination);
+
+	// After the jump, we need to look east or west in the same direction to see if we can jump again.
+	BoardIndex lookaheadHorizontal = GetTranslatedMove(currentMove.m_moveDestination,
+		direction.m_y, direction.m_x);
+
+	BoardIndex lookaheadHorizontalInverted = GetTranslatedMove(currentMove.m_moveDestination,
+		direction.m_y, direction.m_x * -1);
+
+
+	// TODO: I multiply by -1 here and in the AddValidJumpForDirection call. Refactor.
+	BoardIndex lookaheadVerticalInverted = GetTranslatedMove(currentMove.m_moveDestination,
+		direction.m_y * -1, direction.m_x);
 
 	switch (GetPieceForIndex(currentMove.m_moveDestination))
 	{
 	case BLACK:
 	case WHITE:
 	{
-		// After the jump, we need to look east or west in the same direction to see if we can jump again.
-		BoardIndex lookaheadHorizontal = GetTranslatedMove(currentMove.m_moveDestination,
-			direction.m_y, direction.m_x);
-
-		BoardIndex lookaheadHorizontalInverted = GetTranslatedMove(currentMove.m_moveDestination,
-			direction.m_y, direction.m_x * -1);
-
 		if (IsValidBoardIndex(lookaheadHorizontal) &&
 			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontal)))
 		{
@@ -355,7 +369,26 @@ void Game::AddValidJumpsFromJump(const CheckersMove& currentMove,
 		break;
 	case BLACK_KING:
 	case WHITE_KING:
-		// TODO: Implement king jumps and refactor this function at the same time.
+		if (IsValidBoardIndex(lookaheadHorizontal) &&
+			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontal)))
+		{
+			// Look in the same vertical direction and horizontal direction.
+			AddValidJumpForDirection(destination, direction.m_y, direction.m_x);
+		}
+
+		if (IsValidBoardIndex(lookaheadHorizontalInverted) &&
+			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontalInverted)))
+		{
+			// Look in the same vertical direction and opposite horizontal direction.
+			AddValidJumpForDirection(destination, direction.m_y, direction.m_x * -1);
+		}
+
+		if (IsValidBoardIndex(lookaheadVerticalInverted) &&
+			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadVerticalInverted)))
+		{
+			// Look in the same vertical direction and opposite horizontal direction.
+			AddValidJumpForDirection(destination, direction.m_y * -1, direction.m_x);
+		}
 		break;
 	default:
 		break;
@@ -383,6 +416,31 @@ std::string Game::BoardIndexToString(const BoardIndex& index) const
 PieceDisplayType Game::GetPieceForIndex(const BoardIndex& index) const
 {
 	return m_boardData[index.first][index.second];
+}
+
+PieceDisplayType Game::GetPieceForMove(const CheckersMove& move) const
+{
+	switch (GetPieceForIndex(move.m_moveSource))
+	{
+	case WHITE:
+		if (IsKingableIndex(move.m_moveDestination))
+			return WHITE_KING;
+		return WHITE;
+		break;
+	case BLACK:
+		if (IsKingableIndex(move.m_moveDestination))
+			return BLACK_KING;
+		return BLACK;
+		break;
+	case BLACK_KING:
+		return BLACK_KING;
+		break;
+	case WHITE_KING:
+		return WHITE_KING;
+		break;
+	default:
+		break;
+	}
 }
 
 CheckersMove Game::CreateCheckersMove(const BoardIndex& sourceIndex,

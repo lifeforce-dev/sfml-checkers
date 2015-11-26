@@ -125,15 +125,16 @@ void SceneRenderer::ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::Circl
 	switch (pieceDisplayType)
 	{
 	case BLACK:
-		piece.setFillColor(sf::Color(90, 53, 44, 255));
+		piece.setFillColor(sf::Color(117, 69, 57, 255));
 		break;
 	case WHITE:
 		piece.setFillColor(sf::Color(246, 221, 190, 255));
 		break;
 	case BLACK_KING:
-		// TODO
+		piece.setFillColor(sf::Color(51, 33, 28, 255));
 		break;
 	case WHITE_KING:
+		piece.setFillColor(sf::Color(230, 230, 230, 255));
 		// TODO
 		break;
 	case EMPTY:
