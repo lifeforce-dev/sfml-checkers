@@ -19,6 +19,7 @@ enum PieceDisplayType
 	BLACK_KING,
 	WHITE_KING,
 	EMPTY,
+	INVALID = -1,
 };
 
 typedef std::vector<std::vector<PieceDisplayType>> BoardData;

@@ -30,6 +30,8 @@ void SceneRenderer::Draw()
 
 void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
 {
+	// TODO:  SceneRenderer should not be handling input.
+
 	float localX = static_cast<float>(localPosition.x);
 	float localY = static_cast<float>(localPosition.y);
 	LOG_DEBUG_OUTPUT_WINDOW("Mouse button Clicked: (" + std::to_string(localX) + " , "
@@ -37,8 +39,8 @@ void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
 
 	// Find the square that I clicked
 	auto it = std::find_if(m_checkersSquares.begin(), m_checkersSquares.end(),
-		[this, &localX, &localY](const CheckersSquare& currentSquare) {
-
+		[this, &localX, &localY](const CheckersSquare& currentSquare)
+	{
 		return currentSquare.m_square.getGlobalBounds().contains(localX, localY);
 	});
 
@@ -48,7 +50,6 @@ void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
 	if (it == m_checkersSquares.end())
 	{
 		LOG_DEBUG_OUTPUT_WINDOW("Failed to find a valid location.");
-		return;
 	}
 }
 
@@ -57,8 +58,8 @@ void SceneRenderer::BuildBoardBackground()
 	std::vector<sf::Color> colorPalette(s_boardSize);
 
 	bool colorToggle = true;
-	std::generate_n(colorPalette.begin(), s_boardSize, [colorToggle] () mutable {
-
+	std::generate_n(colorPalette.begin(), s_boardSize, [colorToggle] () mutable
+	{
 		// Alternate colors.
 		if (colorToggle = !colorToggle)
 			return sf::Color(209, 139, 71, 255);

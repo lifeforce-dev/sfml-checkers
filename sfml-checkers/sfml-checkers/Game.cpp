@@ -205,7 +205,8 @@ bool Game::IsValidBoardIndex(const BoardIndex& boardIndex) const
 bool Game::IsLegalMove(const CheckersMove& move) const
 {
 	return std::any_of(m_legalDestinations.begin(), m_legalDestinations.end(),
-		[&move](const CheckersMove& currentMove) {
+		[&move](const CheckersMove& currentMove)
+	{
 		return move.m_moveSource == currentMove.m_moveSource
 			&& move.m_moveDestination == currentMove.m_moveDestination;
 	});
@@ -214,7 +215,8 @@ bool Game::IsLegalMove(const CheckersMove& move) const
 bool Game::IsLegalJump(const CheckersMove& move) const
 {
 	return std::any_of(m_legalJumpDestinations.begin(), m_legalJumpDestinations.end(),
-		[&move](const CheckersMove& currentMove) {
+		[&move](const CheckersMove& currentMove)
+	{
 		return move.m_moveSource == currentMove.m_moveSource
 			&& move.m_moveDestination == currentMove.m_moveDestination;
 	});
@@ -342,7 +344,6 @@ void Game::AddValidJumpsFromJump(const CheckersMove& currentMove,
 	BoardIndex lookaheadHorizontalInverted = GetTranslatedMove(currentMove.m_moveDestination,
 		direction.m_y, direction.m_x * -1);
 
-
 	// TODO: I multiply by -1 here and in the AddValidJumpForDirection call. Refactor.
 	BoardIndex lookaheadVerticalInverted = GetTranslatedMove(currentMove.m_moveDestination,
 		direction.m_y * -1, direction.m_x);
@@ -439,6 +440,7 @@ PieceDisplayType Game::GetPieceForMove(const CheckersMove& move) const
 		return WHITE_KING;
 		break;
 	default:
+		return INVALID;
 		break;
 	}
 }
