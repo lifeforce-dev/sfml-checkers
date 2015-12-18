@@ -332,8 +332,6 @@ void Game::AddValidJumpForDirection(const BoardIndex& currentPosition, int verti
 void Game::AddValidJumpsFromJump(const CheckersMove& currentMove,
 	int verticalDirection, int horizontalDirection)
 {
-	// TODO: Refactor this function to remove code duplication and unnecessary operations.
-
 	Vector2D direction(currentMove.m_verticalDirection, currentMove.m_horizontalDirection);
 	const BoardIndex& destination(currentMove.m_moveDestination);
 
@@ -348,51 +346,29 @@ void Game::AddValidJumpsFromJump(const CheckersMove& currentMove,
 	BoardIndex lookaheadVerticalInverted = GetTranslatedMove(currentMove.m_moveDestination,
 		direction.m_y * -1, direction.m_x);
 
-	switch (GetPieceForIndex(currentMove.m_moveDestination))
+	if (IsValidBoardIndex(lookaheadHorizontal) &&
+		!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontal)))
 	{
-	case BLACK:
-	case WHITE:
-	{
-		if (IsValidBoardIndex(lookaheadHorizontal) &&
-			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontal)))
-		{
-			// Look in the same vertical direction and horizontal direction.
-			AddValidJumpForDirection(destination, direction.m_y, direction.m_x);
-		}
-
-		if (IsValidBoardIndex(lookaheadHorizontalInverted) &&
-			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontalInverted)))
-		{
-			// Look in the same vertical direction and opposite horizontal direction.
-			AddValidJumpForDirection(destination, direction.m_y, direction.m_x * -1);
-		}
+		// Look in the same vertical direction and horizontal direction.
+		AddValidJumpForDirection(destination, direction.m_y, direction.m_x);
 	}
-		break;
-	case BLACK_KING:
-	case WHITE_KING:
-		if (IsValidBoardIndex(lookaheadHorizontal) &&
-			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontal)))
-		{
-			// Look in the same vertical direction and horizontal direction.
-			AddValidJumpForDirection(destination, direction.m_y, direction.m_x);
-		}
 
-		if (IsValidBoardIndex(lookaheadHorizontalInverted) &&
-			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontalInverted)))
-		{
-			// Look in the same vertical direction and opposite horizontal direction.
-			AddValidJumpForDirection(destination, direction.m_y, direction.m_x * -1);
-		}
+	if (IsValidBoardIndex(lookaheadHorizontalInverted) &&
+		!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontalInverted)))
+	{
+		// Look in the same vertical direction and opposite horizontal direction.
+		AddValidJumpForDirection(destination, direction.m_y, direction.m_x * -1);
+	}
 
+	if (GetPieceForIndex(currentMove.m_moveDestination) == BLACK_KING
+		|| GetPieceForIndex(currentMove.m_moveDestination) == WHITE_KING)
+	{
 		if (IsValidBoardIndex(lookaheadVerticalInverted) &&
 			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadVerticalInverted)))
 		{
 			// Look in the same vertical direction and opposite horizontal direction.
 			AddValidJumpForDirection(destination, direction.m_y * -1, direction.m_x);
 		}
-		break;
-	default:
-		break;
 	}
 }
 
