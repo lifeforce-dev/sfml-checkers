@@ -335,16 +335,14 @@ void Game::AddValidJumpsFromJump(const CheckersMove& currentMove,
 	Vector2D direction(currentMove.m_verticalDirection, currentMove.m_horizontalDirection);
 	const BoardIndex& destination(currentMove.m_moveDestination);
 
+	Vector2D invertedDirection(direction.m_y * -1, direction.m_x * -1);
+
 	// After the jump, we need to look east or west in the same direction to see if we can jump again.
 	BoardIndex lookaheadHorizontal = GetTranslatedMove(currentMove.m_moveDestination,
 		direction.m_y, direction.m_x);
 
 	BoardIndex lookaheadHorizontalInverted = GetTranslatedMove(currentMove.m_moveDestination,
-		direction.m_y, direction.m_x * -1);
-
-	// TODO: I multiply by -1 here and in the AddValidJumpForDirection call. Refactor.
-	BoardIndex lookaheadVerticalInverted = GetTranslatedMove(currentMove.m_moveDestination,
-		direction.m_y * -1, direction.m_x);
+		direction.m_y, invertedDirection.m_x);
 
 	if (IsValidBoardIndex(lookaheadHorizontal) &&
 		!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontal)))
@@ -357,17 +355,20 @@ void Game::AddValidJumpsFromJump(const CheckersMove& currentMove,
 		!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadHorizontalInverted)))
 	{
 		// Look in the same vertical direction and opposite horizontal direction.
-		AddValidJumpForDirection(destination, direction.m_y, direction.m_x * -1);
+		AddValidJumpForDirection(destination, direction.m_y, invertedDirection.m_x);
 	}
 
 	if (GetPieceForIndex(currentMove.m_moveDestination) == BLACK_KING
 		|| GetPieceForIndex(currentMove.m_moveDestination) == WHITE_KING)
 	{
+		BoardIndex lookaheadVerticalInverted = GetTranslatedMove(currentMove.m_moveDestination,
+			invertedDirection.m_y, direction.m_x);
+
 		if (IsValidBoardIndex(lookaheadVerticalInverted) &&
 			!IsPieceOfCurrentPlayer(GetPieceForIndex(lookaheadVerticalInverted)))
 		{
-			// Look in the same vertical direction and opposite horizontal direction.
-			AddValidJumpForDirection(destination, direction.m_y * -1, direction.m_x);
+			// Look in the opposite vertical direction and same horizontal direction.
+			AddValidJumpForDirection(destination, invertedDirection.m_y, direction.m_x);
 		}
 	}
 }
@@ -457,10 +458,8 @@ void CheckersMoveLauncher::HandleMoveSelected(const BoardIndex& move)
 {
 	if (m_isDestinationSet)
 	{
-		assert(m_isSourceSet);
-
 		LOG_DEBUG_CONSOLE("Warning: This move already has a source and a destination.");
-		return;
+		assert(m_isSourceSet);
 	}
 
 	// The first selected move is the source.
