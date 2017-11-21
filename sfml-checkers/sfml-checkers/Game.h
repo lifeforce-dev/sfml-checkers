@@ -37,10 +37,10 @@ public:
 	const BoardData& GetBoardData() { return m_boardData; }
 
 	// Return the correct board index for UI coordinates.
-	BoardIndex GetBoardIndexFromRowCol(int row, int col) const;
+	Position GetPositionFromRowCol(int row, int col) const;
 
 	// Called in response to the UI reporting that a player made a selection.
-	void OnMoveSelectionEvent(const BoardIndex& boardIndex);
+	void OnMoveSelectionEvent(const Position& position);
 
 private:
 	// This is called from the CheckersMoveLauncher when the move destination is selected.
@@ -63,7 +63,7 @@ private:
 	void PopulateLegalTurnMoves();
 
 	// Returns whether the index is within the bounds of the board.
-	bool IsValidBoardIndex(const BoardIndex& boardIndex) const;
+	bool IsValidPosition(const Position& position) const;
 
 	// Returns whether the move is available in the legal move list.
 	bool IsLegalMove(const CheckersMove& move) const;
@@ -72,29 +72,29 @@ private:
 	bool IsLegalJump(const CheckersMove& move) const;
 
 	// Returns whether the move results in a kingable position.
-	bool IsKingableIndex(const BoardIndex& move) const;
+	bool IsKingableIndex(const Position& move) const;
 
 	// Returns whether the specified index contains a piece.
-	bool ContainsPiece(const BoardIndex& boardIndex) const;
+	bool ContainsPiece(const Position& position) const;
 
 	// Returns whether the specified index contains a piece of the current player's turn.
-	bool ContainsPlayerPiece(const BoardIndex& boardIndex) const;
+	bool ContainsPlayerPiece(const Position& position) const;
 
 	// Returns whether the specified index contains a piece of the enemy of the current player's turn.
-	bool ContainsEnemyPiece(const BoardIndex& boardIndex) const;
+	bool ContainsEnemyPiece(const Position& position) const;
 
 	// Returns whether the specified piece belongs to the player whose turn it currently is.
 	bool IsPieceOfCurrentPlayer(PieceDisplayType piece) const;
 
 	// This will attempt to add possible moves for a specific piece.
-	void EvaluatePossibleMovesForIndex(const BoardIndex& pieceIndex);
+	void EvaluatePossibleMovesForIndex(const Position& pieceIndex);
 
 	// Given a direction, will add a move to the appropriate list if it is valid.
-	void AddValidMoveForDirection(const BoardIndex& currentPosition, int verticalDirection,
+	void AddValidMoveForDirection(const Position& currentPosition, int verticalDirection,
 		int horizontalDirection);
 
 	// Given a direction, will add a valid jump to the jump list.
-	void AddValidJumpForDirection(const BoardIndex& currentPosition, int verticalDirection,
+	void AddValidJumpForDirection(const Position& currentPosition, int verticalDirection,
 		int horizontalDirection);
 
 	// Given a jump, will try and assemble the next jump in the chain if one exists.
@@ -102,23 +102,23 @@ private:
 		int horizontalDirection);
 
 	// Will translate a move which is one space ahead.
-	BoardIndex GetTranslatedMove(const BoardIndex& source, int verticalDirection, int horizontalDirection);
+	Position GetTranslatedMove(const Position& source, int verticalDirection, int horizontalDirection);
 
 	// Will translate a jump which is two spaces ahead.
-	BoardIndex GetTranslatedJump(const BoardIndex& source, int verticalDirection, int horizontalDirection);
+	Position GetTranslatedJump(const Position& source, int verticalDirection, int horizontalDirection);
 
 	// Will return a string representation of a BaordIndex.
-	std::string BoardIndexToString(const BoardIndex& index) const;
+	std::string PositionToString(const Position& index) const;
 
 	// Returns PieceDisplayType for given index.
-	PieceDisplayType GetPieceForIndex(const BoardIndex& index) const;
+	PieceDisplayType GetPieceForIndex(const Position& index) const;
 
 	// Returns the appropriate piece for the destination of the move that was given.
 	PieceDisplayType GetPieceForMove(const CheckersMove& move) const;
 
 	// Will construct and return a CheckersMove.
-	CheckersMove CreateCheckersMove(const BoardIndex& sourceIndex,
-		const BoardIndex& destinationIndex) const;
+	CheckersMove CreateCheckersMove(const Position& sourceIndex,
+		const Position& destinationIndex) const;
 
 	// Contains every movable index and what type of piece if any is there.
 	BoardData m_boardData;
@@ -141,19 +141,19 @@ class CheckersMove
 {
 public:
 	CheckersMove() {}
-	CheckersMove(BoardIndex source, BoardIndex destination);
-	void SetSource(BoardIndex source) { m_source = source; }
-	void SetDestination(BoardIndex destination);
+	CheckersMove(Position source, Position destination);
+	void SetSource(Position source) { m_source = source; }
+	void SetDestination(Position destination);
 
 	Vector2D GetDirection() const { return m_direction; }
 	Vector2D GetDistance() const { return m_distance; }
 	int GetLength() const { return m_length; }
-	const BoardIndex& GetSource() const { return m_source; }
-	const BoardIndex& GetDestination() const { return m_destination; }
+	const Position& GetSource() const { return m_source; }
+	const Position& GetDestination() const { return m_destination; }
 
 private:
-	BoardIndex m_source;
-	BoardIndex m_destination;
+	Position m_source;
+	Position m_destination;
 
 	Vector2D m_direction;
 	Vector2D m_distance;
@@ -173,7 +173,7 @@ public:
 	~CheckersMoveHelper();
 
 	// This will through sequential calls, set the source and destination.
-	void HandleMoveSelected(const BoardIndex& moveSource);
+	void HandleMoveSelected(const Position& moveSource);
 
 	const CheckersMove& GetCheckersMove() const;
 

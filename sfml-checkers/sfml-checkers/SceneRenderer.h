@@ -35,11 +35,11 @@ private:
 
 struct CheckersSquare
 {
-	CheckersSquare(const sf::RectangleShape square, const BoardIndex& boardIndex);
+	CheckersSquare(const sf::RectangleShape square, const Position& position);
 
 	// The drawable representation of the CheckersSquare.
 	sf::RectangleShape m_square;
 
 	// Where on the board is this square in row, col.
-	BoardIndex m_boardIndex;
+	Position m_position;
 };

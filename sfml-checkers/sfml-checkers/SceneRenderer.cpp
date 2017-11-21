@@ -45,7 +45,7 @@ void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
 	});
 
 	// Notify game of a move selection event
-	m_game->OnMoveSelectionEvent(it->m_boardIndex);
+	m_game->OnMoveSelectionEvent(it->m_position);
 
 	if (it == m_checkersSquares.end())
 	{
@@ -75,7 +75,7 @@ void SceneRenderer::BuildBoardBackground()
 			currentSquare.setPosition(row * s_squareSize, col * s_squareSize);
 			currentSquare.setFillColor(colorPalette[col]);
 
-			CheckersSquare square(currentSquare, m_game->GetBoardIndexFromRowCol(row, col));
+			CheckersSquare square(currentSquare, m_game->GetPositionFromRowCol(row, col));
 			m_checkersSquares.push_back(square);
 		}
 
@@ -151,8 +151,8 @@ void SceneRenderer::ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::Circl
 
 //--------------------------------------------------------------------------------------------------------
 
-CheckersSquare::CheckersSquare(const sf::RectangleShape square, const BoardIndex& boardIndex)
+CheckersSquare::CheckersSquare(const sf::RectangleShape square, const Position& position)
 	: m_square(square)
-	, m_boardIndex(boardIndex)
+	, m_position(position)
 {
 }
