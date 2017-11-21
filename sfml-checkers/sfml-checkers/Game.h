@@ -23,6 +23,16 @@ struct Vector2D
 	int32_t y;
 };
 
+struct Range
+{
+	Range(int32_t min_, int32_t max_)
+		: min(min_)
+		, max(max_) {}
+	int32_t min = 0;
+	int32_t max = 0;
+	bool Contains(int32_t x) const { return x >= min && x <= max; }
+};
+
 //---------------------------------------------------------------
 
 class CheckersMoveHelper;

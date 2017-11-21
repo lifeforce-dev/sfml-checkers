@@ -24,6 +24,7 @@ namespace {
 	const int s_jumpLength = 2;
 
 	const int s_boardSize = 8;
+	const Range s_indexRange(0, s_boardSize - 1);
 }
 
 Game::Game()
@@ -186,7 +187,7 @@ bool Game::IsValidPosition(const Position& position) const
 	int row = position.row;
 	int col = position.col;
 
-	return row >= 0 && row < s_boardSize && col >= 0 && col < s_boardSize;
+	return s_indexRange.Contains(row) && s_indexRange.Contains(col);
 }
 
 bool Game::IsLegalMove(const CheckersMove& move) const
@@ -212,8 +213,8 @@ bool Game::IsLegalJump(const CheckersMove& move) const
 bool Game::IsKingableIndex(const Position& position) const
 {
 	// If we are within the first or last row, we are kingable.
-	return (position.row == 0 && position.col >= 0 && position.col < s_boardSize)
-		|| (position.row == s_boardSize - 1 && position.row >= 0 && position.row < s_boardSize);
+	return IsValidPosition(position) && (position.row == 0 ||
+		position.row == s_boardSize - 1);
 }
 
 bool Game::ContainsPiece(const Position& position) const
