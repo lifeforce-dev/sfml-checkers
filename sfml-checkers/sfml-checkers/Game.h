@@ -10,25 +10,26 @@
 #include <memory>
 #include <functional>
 
-class CheckersMoveLauncher;
-struct CheckersMove;
-
 struct Vector2D
 {
-	Vector2D(int y, int x)
-		: m_y(y)
-		, m_x(x)
+	Vector2D() {}
+	Vector2D(int32_t y, int32_t x)
+		: y(y)
+		, x(x)
 	{
 	}
 
-	int m_x;
-	int m_y;
+	int32_t x;
+	int32_t y;
 };
 
 //---------------------------------------------------------------
 
+class CheckersMoveHelper;
+class CheckersMove;
 class Game
 {
+	friend class CheckersMoveHelper;
 public:
 	Game();
 	~Game();
@@ -44,7 +45,7 @@ public:
 private:
 	// This is called from the CheckersMoveLauncher when the move destination is selected.
 	// This will reset the CheckersMoveLauncher unconditionally, and attempt to move.
-	void OnLaunchMove();
+	void OnLaunchMove(const CheckersMove& move);
 
 	// Setup pieces in initial position and other initialization activities.
 	void Setup();
@@ -122,8 +123,8 @@ private:
 	// Contains every movable index and what type of piece if any is there.
 	BoardData m_boardData;
 
-	// Stores the source move and destination move when requested by the player.
-	std::unique_ptr<CheckersMoveLauncher> m_pendingMoveLauncher;
+	// Helper object that moves a piece from source to dest.
+	std::unique_ptr<CheckersMoveHelper> m_moveHelper;
 
 	// This list is populated each turn and represents all possible moves of that player.
 	std::vector<CheckersMove> m_legalDestinations;
@@ -136,51 +137,52 @@ private:
 };
 
 //---------------------------------------------------------------
-
-struct CheckersMove
+class CheckersMove
 {
-	CheckersMove(BoardIndex source, BoardIndex destination, int verticalDirection = 0,
-		int horizontalDirection = 0);
+public:
+	CheckersMove() {}
+	CheckersMove(BoardIndex source, BoardIndex destination);
+	void SetSource(BoardIndex source) { m_source = source; }
+	void SetDestination(BoardIndex destination);
 
-	BoardIndex m_moveSource;
-	BoardIndex m_moveDestination;
+	Vector2D GetDirection() const { return m_direction; }
+	Vector2D GetDistance() const { return m_distance; }
+	int GetLength() const { return m_length; }
+	const BoardIndex& GetSource() const { return m_source; }
+	const BoardIndex& GetDestination() const { return m_destination; }
 
-	// For simplicity, we store the direction of the move to easily be able to clear pieces
-	// and look for further jumps. We could figure this out but why not just store it.
-	int m_verticalDirection;
-	int m_horizontalDirection;
-	int m_rowDistance;
-	int m_columnDistance;
-	int m_moveLength;
+private:
+	BoardIndex m_source;
+	BoardIndex m_destination;
+
+	Vector2D m_direction;
+	Vector2D m_distance;
+	int m_length = 0;
+
+	void UpdateMoveDistance();
+	void UpdateMoveLength();
+	void UpdateMoveDirection();
 };
 
 //---------------------------------------------------------------
 
-class CheckersMoveLauncher
+class CheckersMoveHelper
 {
 public:
-	CheckersMoveLauncher(std::function<void()> performMoveCallback);
-	~CheckersMoveLauncher();
+	CheckersMoveHelper(Game* game);
+	~CheckersMoveHelper();
 
 	// This will through sequential calls, set the source and destination.
 	void HandleMoveSelected(const BoardIndex& moveSource);
 
-	const BoardIndex& GetMoveSource() const;
-	const BoardIndex& GetMoveDestination() const;
 	const CheckersMove& GetCheckersMove() const;
 
-	bool IsSourceSet() const;
-
 private:
-	void SetMoveDirection();
-	void SetMoveLength();
-	void SetMoveDistance();
-
+	Game* m_game;
 	CheckersMove m_checkersMove;
-
-	bool m_isSourceSet;
-	bool m_isDestinationSet;
 
 	// This is called when both source and destination moves are set.
 	std::function<void()> m_launchMoveCallback;
+
+	bool m_isSelectingMove = false;
 };

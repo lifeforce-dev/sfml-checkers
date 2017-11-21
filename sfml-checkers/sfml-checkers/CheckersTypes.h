@@ -22,5 +22,23 @@ enum PieceDisplayType
 	INVALID = -1,
 };
 
+struct BoardIndex
+{
+	BoardIndex() = default;
+	~BoardIndex() = default;
+	BoardIndex(int32_t row_, int32_t col_)
+		: row(row_)
+		, col(col_)
+	{
+	}
+	BoardIndex(const BoardIndex& rhs)
+	{
+		row = rhs.row;
+		col = rhs.col;
+	}
+	bool operator==(const BoardIndex& rhs) const { return rhs.row == row && rhs.col == col; };
+	int32_t row = -1;
+	int32_t col = -1;
+};
+
 typedef std::vector<std::vector<PieceDisplayType>> BoardData;
-typedef std::pair<int, int> BoardIndex;
