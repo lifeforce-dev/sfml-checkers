@@ -9,6 +9,11 @@
 
 #include <assert.h>
 
+namespace {
+	const float s_squareSize = 100.0f;
+	const float s_pieceSize = 25.0f;
+}
+
 SceneRenderer::SceneRenderer(sf::RenderTarget& target, Game* game)
 	: m_renderTarget(&target)
 	, m_game(game)
@@ -55,10 +60,11 @@ void SceneRenderer::OnMouseClick(sf::Vector2i localPosition)
 
 void SceneRenderer::BuildBoardBackground()
 {
-	std::vector<sf::Color> colorPalette(s_boardSize);
+	int boardSize = m_game->GetBoardSize();
+	std::vector<sf::Color> colorPalette(boardSize);
 
 	bool colorToggle = true;
-	std::generate_n(colorPalette.begin(), s_boardSize, [colorToggle] () mutable
+	std::generate_n(colorPalette.begin(), boardSize, [colorToggle] () mutable
 	{
 		// Alternate colors.
 		if (colorToggle = !colorToggle)
@@ -67,9 +73,9 @@ void SceneRenderer::BuildBoardBackground()
 			return sf::Color(255, 228, 170, 255);
 	});
 
-	for (int row = 0; row < s_boardSize; ++row)
+	for (int row = 0; row < boardSize; ++row)
 	{
-		for (int col = 0; col < s_boardSize; ++col)
+		for (int col = 0; col < boardSize; ++col)
 		{
 			sf::RectangleShape currentSquare = sf::RectangleShape(sf::Vector2f(s_squareSize, s_squareSize));
 			currentSquare.setPosition(row * s_squareSize, col * s_squareSize);

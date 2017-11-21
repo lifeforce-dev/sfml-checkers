@@ -22,6 +22,8 @@ namespace {
 
 	const int s_moveLength = 1;
 	const int s_jumpLength = 2;
+
+	const int s_boardSize = 8;
 }
 
 Game::Game()
@@ -34,6 +36,11 @@ Game::Game()
 
 Game::~Game()
 {
+}
+
+int Game::GetBoardSize()
+{
+	return s_boardSize;
 }
 
 Position Game::GetPositionFromRowCol(int row, int col) const

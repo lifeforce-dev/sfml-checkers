@@ -36,6 +36,8 @@ public:
 
 	const BoardData& GetBoardData() { return m_boardData; }
 
+	int GetBoardSize();
+
 	// Return the correct board index for UI coordinates.
 	Position GetPositionFromRowCol(int row, int col) const;
 
