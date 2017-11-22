@@ -9,6 +9,8 @@
 
 #include <assert.h>
 
+namespace Checkers {
+
 namespace {
 	const float s_squareSize = 100.0f;
 	const float s_pieceSize = 25.0f;
@@ -162,3 +164,5 @@ CheckersSquare::CheckersSquare(const sf::RectangleShape square, const Position& 
 	, m_position(position)
 {
 }
+
+} // namespace Checkers

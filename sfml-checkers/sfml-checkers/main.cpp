@@ -7,7 +7,7 @@
 
 int main()
 {
-	AppController appController;
+	Checkers::AppController appController;
 
 	appController.Run();
 	return 0;

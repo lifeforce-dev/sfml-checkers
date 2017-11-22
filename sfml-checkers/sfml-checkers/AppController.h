@@ -10,6 +10,10 @@
 
 #include <SFML/Graphics.hpp>
 
+namespace Checkers {
+
+//========================================================================
+
 class AppController
 {
 public:
@@ -24,3 +28,7 @@ private:
 	Game m_game;
 	SceneRenderer m_sceneRenderer;
 };
+
+//========================================================================
+
+} // namespace Checkers

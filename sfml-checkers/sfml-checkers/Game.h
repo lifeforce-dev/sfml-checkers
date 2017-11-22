@@ -10,30 +10,9 @@
 #include <memory>
 #include <functional>
 
-struct Vector2D
-{
-	Vector2D() {}
-	Vector2D(int32_t y, int32_t x)
-		: y(y)
-		, x(x)
-	{
-	}
+namespace Checkers {
 
-	int32_t x;
-	int32_t y;
-};
-
-struct Range
-{
-	Range(int32_t min_, int32_t max_)
-		: min(min_)
-		, max(max_) {}
-	int32_t min = 0;
-	int32_t max = 0;
-	bool Contains(int32_t x) const { return x >= min && x <= max; }
-};
-
-//---------------------------------------------------------------
+//========================================================================
 
 class CheckersMoveHelper;
 class CheckersMove;
@@ -148,55 +127,6 @@ private:
 	bool m_isWhitePlayerTurn;
 };
 
-//---------------------------------------------------------------
+//========================================================================
 
-// Encapsulates a piece move from one position to another.
-class CheckersMove
-{
-public:
-	CheckersMove() {}
-	CheckersMove(Position source, Position destination);
-	void SetSource(Position source) { m_source = source; }
-	void SetDestination(Position destination);
-
-	Vector2D GetDirection() const { return m_direction; }
-	Vector2D GetDistance() const { return m_distance; }
-	int GetLength() const { return m_length; }
-	const Position& GetSource() const { return m_source; }
-	const Position& GetDestination() const { return m_destination; }
-
-private:
-	Position m_source;
-	Position m_destination;
-
-	Vector2D m_direction;
-	Vector2D m_distance;
-	int m_length = 0;
-
-	void UpdateMoveDistance();
-	void UpdateMoveLength();
-	void UpdateMoveDirection();
-};
-
-//---------------------------------------------------------------
-
-class CheckersMoveHelper
-{
-public:
-	CheckersMoveHelper(Game* game);
-	~CheckersMoveHelper();
-
-	// This will through sequential calls, set the source and destination.
-	void HandlePositionSelected(const Position& position);
-
-	const CheckersMove& GetCheckersMove() const;
-
-private:
-	Game* m_game;
-	CheckersMove m_checkersMove;
-
-	// This is called when both source and destination moves are set.
-	std::function<void()> m_launchMoveCallback;
-
-	bool m_isSelectingMove = false;
-};
+} // namespace Checkers

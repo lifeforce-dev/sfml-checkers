@@ -9,7 +9,12 @@
 #include <assert.h>
 #include <algorithm>
 
-namespace {
+namespace Checkers {
+
+//========================================================================
+
+namespace
+{
 	// White player will move South
 	const int s_south = 1;
 
@@ -24,8 +29,127 @@ namespace {
 	const int s_jumpLength = 2;
 
 	const int s_boardSize = 8;
+
 	const Range s_indexRange(0, s_boardSize - 1);
 }
+
+//------------------------------------------------------------------------
+
+// Encapsulates a piece move from one position to another.
+class CheckersMove
+{
+public:
+	CheckersMove() {}
+	CheckersMove::CheckersMove(Position source, Position destination)
+		: m_source(source)
+		, m_destination(destination)
+		, m_length(0)
+	{
+	}
+	void SetSource(Position source) { m_source = source; }
+
+	void SetDestination(Position destination)
+	{
+		m_destination = destination;
+		UpdateMoveDistance();
+		UpdateMoveLength();
+		UpdateMoveDirection();
+	}
+
+	Vector2D GetDirection() const { return m_direction; }
+	Vector2D GetDistance() const { return m_distance; }
+	int GetLength() const { return m_length; }
+	const Position& GetSource() const { return m_source; }
+	const Position& GetDestination() const { return m_destination; }
+
+private:
+	Position m_source;
+	Position m_destination;
+
+	Vector2D m_direction;
+	Vector2D m_distance;
+	int m_length = 0;
+
+	void UpdateMoveDistance()
+	{
+		// dx = x2 - x1
+		m_distance.x = m_destination.row - m_source.row;
+		m_distance.y = m_destination.col - m_source.col;
+	}
+
+	void UpdateMoveLength()
+	{
+		// Normalize.
+		m_length = static_cast<int>(std::sqrt(m_distance.y * m_distance.y +
+			m_distance.x * m_distance.x));
+	}
+
+	void UpdateMoveDirection()
+	{
+		if (m_length == 0)
+		{
+			// We didn't move anywhere, so we can't have a direction.
+			return;
+		}
+		// 0,0 is top left. We want x to be row (up and down) and y to be col.
+		m_direction.x = m_distance.y / m_length;
+		m_direction.y = m_distance.x / m_length;
+	}
+
+};
+
+//------------------------------------------------------------------------
+
+// Helper class for managing and executing a move
+class CheckersMoveHelper
+{
+public:
+	CheckersMoveHelper(Game* game) : m_game(game) { }
+	~CheckersMoveHelper() { }
+
+	// Attempts to set the source and destination of a move, and then execute it.
+	void HandlePositionSelected(const Position& position)
+	{
+		if (!m_isSelectingMove)
+		{
+			if (m_game->ContainsPiece(position))
+			{
+				m_isSelectingMove = true;
+				m_checkersMove.SetSource(position);
+			}
+		}
+		else
+		{
+			if (position != m_checkersMove.GetSource())
+			{
+				m_checkersMove.SetDestination(position);
+			}
+
+			// Ready to move, launch!
+			m_game->OnLaunchMove(m_checkersMove);
+
+			// Clear state.
+			m_checkersMove = CheckersMove();
+			m_isSelectingMove = false;
+		}
+	}
+
+	const CheckersMove& GetCheckersMove() const
+	{
+		return m_checkersMove;
+	}
+
+private:
+	Game* m_game;
+	CheckersMove m_checkersMove;
+
+	// This is called when both source and destination moves are set.
+	std::function<void()> m_launchMoveCallback;
+
+	bool m_isSelectingMove = false;
+};
+
+//------------------------------------------------------------------------
 
 Game::Game()
 	: m_boardData(s_boardSize, std::vector<PieceDisplayType>(s_boardSize, EMPTY))
@@ -128,7 +252,7 @@ void Game::JumpPiece(const CheckersMove& currentMove)
 	Vector2D direction = currentMove.GetDirection();
 
 	// Piece in between source and destination.
-	Position middleOfJumpIndex = GetTranslatedMove(source, direction.y, direction.x);
+	Position capturedPiecePosition = GetTranslatedMove(source, direction.y, direction.x);
 
 	// Move the source piece to the destination.
 	m_boardData[destination.row][destination.col] = GetPieceForMove(currentMove);
@@ -136,8 +260,8 @@ void Game::JumpPiece(const CheckersMove& currentMove)
 	// Clear source spot.
 	m_boardData[source.row][source.col] = EMPTY;
 
-	// Capture the piece between source and destination.
-	m_boardData[middleOfJumpIndex.row][middleOfJumpIndex.col] = EMPTY;
+	// Capture the captured piece's spot.
+	m_boardData[capturedPiecePosition.row][capturedPiecePosition.col] = EMPTY;
 
 	m_legalJumpDestinations.clear();
 
@@ -413,87 +537,6 @@ CheckersMove Game::CreateCheckersMove(const Position& sourceIndex,
 	return CheckersMove(sourceIndex, destinationIndex);
 }
 
-//---------------------------------------------------------------
+//========================================================================
 
-CheckersMove::CheckersMove(Position source, Position destination)
-	: m_source(source)
-	, m_destination(destination)
-	, m_length(0)
-{
-}
-
-void CheckersMove::SetDestination(Position destination)
-{
-	m_destination = destination;
-	UpdateMoveDistance();
-	UpdateMoveLength();
-	UpdateMoveDirection();
-}
-
-void CheckersMove::UpdateMoveDistance()
-{
-	// dx = x2 - x1
-	m_distance.x = m_destination.row - m_source.row;
-	m_distance.y = m_destination.col - m_source.col;
-}
-
-void CheckersMove::UpdateMoveLength()
-{
-	// Normalize.
-	m_length = static_cast<int>(std::sqrt(m_distance.y * m_distance.y +
-		m_distance.x * m_distance.x));
-}
-
-void CheckersMove::UpdateMoveDirection()
-{
-	if (m_length == 0)
-	{
-		// We didn't move anywhere, so we can't have a direction.
-		return;
-	}
-	// 0,0 is top left. We want x to be row (up and down) and y to be col.
-	m_direction.x = m_distance.y / m_length;
-	m_direction.y = m_distance.x / m_length;
-}
-
-//---------------------------------------------------------------
-
-CheckersMoveHelper::CheckersMoveHelper(Game* game)
-	: m_game(game)
-{
-}
-
-CheckersMoveHelper::~CheckersMoveHelper()
-{
-}
-
-void CheckersMoveHelper::HandlePositionSelected(const Position& position)
-{
-	if (!m_isSelectingMove)
-	{
-		if (m_game->ContainsPiece(position))
-		{
-			m_isSelectingMove = true;
-			m_checkersMove.SetSource(position);
-		}
-	}
-	else
-	{
-		if (position != m_checkersMove.GetSource())
-		{
-			m_checkersMove.SetDestination(position);
-		}
-
-		// Ready to move, launch!
-		m_game->OnLaunchMove(m_checkersMove);
-
-		// Clear state.
-		m_checkersMove = CheckersMove();
-		m_isSelectingMove = false;
-	}
-}
-
-const CheckersMove& CheckersMoveHelper::GetCheckersMove() const
-{
-	return m_checkersMove;
-}
+} // namespace Checkers

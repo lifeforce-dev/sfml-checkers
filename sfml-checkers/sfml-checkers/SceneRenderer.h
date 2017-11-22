@@ -9,6 +9,10 @@
 
 #include <SFML/Graphics.hpp>
 
+namespace Checkers {
+
+//========================================================================
+
 class Game;
 struct CheckersSquare;
 
@@ -43,3 +47,7 @@ struct CheckersSquare
 	// Where on the board is this square in row, col.
 	Position m_position;
 };
+
+//========================================================================
+
+} // namespace Checkers

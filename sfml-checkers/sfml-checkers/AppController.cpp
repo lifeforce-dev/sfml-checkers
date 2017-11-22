@@ -6,6 +6,10 @@
 #include "AppController.h"
 #include <iostream>
 
+namespace Checkers {
+
+//========================================================================
+
 AppController::AppController()
 	: m_mainWindow(sf::VideoMode(800, 800), "Checkers")
 	, m_sceneRenderer(m_mainWindow, &m_game)
@@ -45,3 +49,7 @@ void AppController::ProcessEvents()
 		}
 	}
 }
+
+//========================================================================
+
+} // namespace Checkers
