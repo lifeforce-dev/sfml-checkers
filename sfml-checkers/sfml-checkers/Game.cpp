@@ -56,7 +56,7 @@ Position Game::GetPositionFromRowCol(int row, int col) const
 void Game::OnMoveSelectionEvent(const Position& position)
 {
 	assert(IsValidPosition(position));
-	m_moveHelper->HandleMoveSelected(position);
+	m_moveHelper->HandlePositionSelected(position);
 }
 
 void Game::OnLaunchMove(const CheckersMove& move)
@@ -184,10 +184,7 @@ void Game::PopulateLegalTurnMoves()
 
 bool Game::IsValidPosition(const Position& position) const
 {
-	int row = position.row;
-	int col = position.col;
-
-	return s_indexRange.Contains(row) && s_indexRange.Contains(col);
+	return s_indexRange.Contains(position.row) && s_indexRange.Contains(position.col);
 }
 
 bool Game::IsLegalMove(const CheckersMove& move) const
@@ -470,21 +467,21 @@ CheckersMoveHelper::~CheckersMoveHelper()
 {
 }
 
-void CheckersMoveHelper::HandleMoveSelected(const Position& move)
+void CheckersMoveHelper::HandlePositionSelected(const Position& position)
 {
 	if (!m_isSelectingMove)
 	{
-		if (m_game->ContainsPiece(move))
+		if (m_game->ContainsPiece(position))
 		{
 			m_isSelectingMove = true;
-			m_checkersMove.SetSource(move);
+			m_checkersMove.SetSource(position);
 		}
 	}
 	else
 	{
-		if (move != m_checkersMove.GetSource())
+		if (position != m_checkersMove.GetSource())
 		{
-			m_checkersMove.SetDestination(move);
+			m_checkersMove.SetDestination(position);
 		}
 
 		// Ready to move, launch!

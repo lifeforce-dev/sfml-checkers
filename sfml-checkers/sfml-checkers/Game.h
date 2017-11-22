@@ -149,6 +149,8 @@ private:
 };
 
 //---------------------------------------------------------------
+
+// Encapsulates a piece move from one position to another.
 class CheckersMove
 {
 public:
@@ -185,7 +187,7 @@ public:
 	~CheckersMoveHelper();
 
 	// This will through sequential calls, set the source and destination.
-	void HandleMoveSelected(const Position& moveSource);
+	void HandlePositionSelected(const Position& position);
 
 	const CheckersMove& GetCheckersMove() const;
 
