@@ -123,6 +123,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppController.cpp" />
+    <ClCompile Include="CheckersMoveHelper.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
@@ -130,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppController.h" />
+    <ClInclude Include="CheckersMoveHelper.h" />
     <ClInclude Include="CheckersTypes.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Log.h" />
