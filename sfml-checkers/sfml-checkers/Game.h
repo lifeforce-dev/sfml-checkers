@@ -75,7 +75,7 @@ private:
 	bool ContainsEnemyPiece(const Position& position) const;
 
 	// Returns whether the specified piece belongs to the player whose turn it currently is.
-	bool IsPieceOfCurrentPlayer(PieceDisplayType piece) const;
+	bool IsPieceOfCurrentPlayer(EntityType piece) const;
 
 	// This will attempt to add possible moves for a specific piece.
 	void EvaluatePossibleMovesForIndex(const Position& pieceIndex);
@@ -101,11 +101,11 @@ private:
 	// Will return a string representation of a BaordIndex.
 	std::string PositionToString(const Position& index) const;
 
-	// Returns PieceDisplayType for given index.
-	PieceDisplayType GetPieceForIndex(const Position& index) const;
+	// Returns EntityType for given index.
+	EntityType GetPieceForIndex(const Position& index) const;
 
 	// Returns the appropriate piece for the destination of the move that was given.
-	PieceDisplayType GetPieceForMove(const CheckersMove& move) const;
+	EntityType GetPieceForMove(const CheckersMove& move) const;
 
 	// Will construct and return a CheckersMove.
 	CheckersMove CreateCheckersMove(const Position& sourceIndex,

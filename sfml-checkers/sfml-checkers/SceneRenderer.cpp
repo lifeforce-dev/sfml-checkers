@@ -129,9 +129,9 @@ void SceneRenderer::DrawBoardPieces()
 	}
 }
 
-void SceneRenderer::ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::CircleShape& piece)
+void SceneRenderer::ApplyPieceColor(EntityType entityType, sf::CircleShape& piece)
 {
-	switch (pieceDisplayType)
+	switch (entityType)
 	{
 	case BLACK:
 		piece.setFillColor(sf::Color(117, 69, 57, 255));

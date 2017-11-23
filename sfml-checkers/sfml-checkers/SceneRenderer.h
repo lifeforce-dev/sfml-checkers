@@ -30,7 +30,7 @@ private:
 	void DrawBoardBackground();
 	void DrawBoardPieces();
 
-	void ApplyPieceColor(PieceDisplayType pieceDisplayType, sf::CircleShape& piece);
+	void ApplyPieceColor(EntityType entityType, sf::CircleShape& piece);
 
 	sf::RenderTarget* m_renderTarget;
 	std::vector<CheckersSquare> m_checkersSquares;

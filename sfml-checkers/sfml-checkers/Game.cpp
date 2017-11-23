@@ -38,7 +38,7 @@ namespace
 //-----------------------------------------------------------------------
 
 Game::Game()
-	: m_boardData(s_boardSize, std::vector<PieceDisplayType>(s_boardSize, EMPTY))
+	: m_boardData(s_boardSize, std::vector<EntityType>(s_boardSize, EMPTY))
 	, m_moveHelper(new CheckersMoveHelper(this))
 	, m_isWhitePlayerTurn(true)
 {
@@ -183,7 +183,7 @@ void Game::PopulateLegalTurnMoves()
 		for (int col = 0; col < s_boardSize; ++col)
 		{
 			Position currentIndex = Position(row, col);
-			PieceDisplayType currentPiece = m_boardData[row][col];
+			EntityType currentPiece = m_boardData[row][col];
 			if (ContainsPiece(currentIndex) && IsPieceOfCurrentPlayer(currentPiece))
 			{
 				EvaluatePossibleMovesForIndex(currentIndex);
@@ -243,7 +243,7 @@ bool Game::ContainsEnemyPiece(const Position& position) const
 		&& !IsPieceOfCurrentPlayer(m_boardData[position.row][position.col]);
 }
 
-bool Game::IsPieceOfCurrentPlayer(PieceDisplayType piece) const
+bool Game::IsPieceOfCurrentPlayer(EntityType piece) const
 {
 	return m_isWhitePlayerTurn && (piece == WHITE || piece == WHITE_KING)
 		|| !m_isWhitePlayerTurn && (piece == BLACK || piece == BLACK_KING);
@@ -386,12 +386,12 @@ std::string Game::PositionToString(const Position& index) const
 	return std::string(std::to_string(index.row) +  " , ") + std::to_string(index.col);
 }
 
-PieceDisplayType Game::GetPieceForIndex(const Position& index) const
+EntityType Game::GetPieceForIndex(const Position& index) const
 {
 	return m_boardData[index.row][index.col];
 }
 
-PieceDisplayType Game::GetPieceForMove(const CheckersMove& move) const
+EntityType Game::GetPieceForMove(const CheckersMove& move) const
 {
 	switch (GetPieceForIndex(move.GetSource()))
 	{

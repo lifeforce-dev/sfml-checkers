@@ -10,7 +10,7 @@ namespace Checkers {
 
 //========================================================================
 
-enum PieceDisplayType
+enum EntityType
 {
 	BLACK,
 	WHITE,
@@ -63,7 +63,7 @@ struct Range
 	bool Contains(int32_t x) const { return x >= min && x <= max; }
 };
 
-using BoardData = std::vector<std::vector<PieceDisplayType>>;
+using BoardData = std::vector<std::vector<EntityType>>;
 
 //========================================================================
 
