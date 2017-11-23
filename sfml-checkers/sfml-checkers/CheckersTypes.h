@@ -10,14 +10,14 @@ namespace Checkers {
 
 //========================================================================
 
-enum EntityType
+enum class EntityType: uint32_t
 {
 	BLACK,
 	WHITE,
 	BLACK_KING,
 	WHITE_KING,
 	EMPTY,
-	INVALID = -1,
+	INVALID,
 };
 
 struct Position

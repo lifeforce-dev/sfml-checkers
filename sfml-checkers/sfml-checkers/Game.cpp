@@ -38,7 +38,7 @@ namespace
 //-----------------------------------------------------------------------
 
 Game::Game()
-	: m_boardData(s_boardSize, std::vector<EntityType>(s_boardSize, EMPTY))
+	: m_boardData(s_boardSize, std::vector<EntityType>(s_boardSize, EntityType::EMPTY))
 	, m_moveHelper(new CheckersMoveHelper(this))
 	, m_isWhitePlayerTurn(true)
 {
@@ -101,11 +101,11 @@ void Game::Setup()
 			if ((row + col) % 2)
 			{
 				if (row > 4)
-					m_boardData[row][col] = BLACK;
+					m_boardData[row][col] = EntityType::BLACK;
 				else if (row < 3)
-					m_boardData[row][col] = WHITE;
+					m_boardData[row][col] = EntityType::WHITE;
 				else
-					m_boardData[row][col] = EMPTY;
+					m_boardData[row][col] = EntityType::EMPTY;
 			}
 		}
 	}
@@ -122,7 +122,7 @@ void Game::MovePiece(const CheckersMove& currentMove)
 	m_boardData[destination.row][destination.col] = GetPieceForMove(currentMove);
 
 	// Clear previous spot.
-	m_boardData[source.row][source.col] = EMPTY;
+	m_boardData[source.row][source.col] = EntityType::EMPTY;
 
 	SwitchTurns();
 }
@@ -144,10 +144,10 @@ void Game::JumpPiece(const CheckersMove& currentMove)
 	m_boardData[destination.row][destination.col] = GetPieceForMove(currentMove);
 
 	// Clear source spot.
-	m_boardData[source.row][source.col] = EMPTY;
+	m_boardData[source.row][source.col] = EntityType::EMPTY;
 
 	// Capture the captured piece's spot.
-	m_boardData[capturedPiecePosition.row][capturedPiecePosition.col] = EMPTY;
+	m_boardData[capturedPiecePosition.row][capturedPiecePosition.col] = EntityType::EMPTY;
 
 	m_legalJumpDestinations.clear();
 
@@ -227,7 +227,7 @@ bool Game::IsKingableIndex(const Position& position) const
 bool Game::ContainsPiece(const Position& position) const
 {
 	return IsValidPosition(position)
-		&& m_boardData[position.row][position.col] != EMPTY;
+		&& m_boardData[position.row][position.col] != EntityType::EMPTY;
 }
 
 bool Game::ContainsPlayerPiece(const Position& position) const
@@ -239,14 +239,14 @@ bool Game::ContainsPlayerPiece(const Position& position) const
 bool Game::ContainsEnemyPiece(const Position& position) const
 {
 	return IsValidPosition(position)
-		&& m_boardData[position.row][position.col] != EMPTY
+		&& m_boardData[position.row][position.col] != EntityType::EMPTY
 		&& !IsPieceOfCurrentPlayer(m_boardData[position.row][position.col]);
 }
 
 bool Game::IsPieceOfCurrentPlayer(EntityType piece) const
 {
-	return m_isWhitePlayerTurn && (piece == WHITE || piece == WHITE_KING)
-		|| !m_isWhitePlayerTurn && (piece == BLACK || piece == BLACK_KING);
+	return m_isWhitePlayerTurn && (piece == EntityType::WHITE || piece == EntityType::WHITE_KING) ||
+		!m_isWhitePlayerTurn && (piece == EntityType::BLACK || piece == EntityType::BLACK_KING);
 }
 
 void Game::EvaluatePossibleMovesForIndex(const Position& position)
@@ -255,22 +255,22 @@ void Game::EvaluatePossibleMovesForIndex(const Position& position)
 
 	switch (m_boardData[position.row][position.col])
 	{
-	case BLACK:
+	case EntityType::BLACK:
 		// Look for jumps and move looking North East and North West.
 		AddValidMoveForDirection(position, s_north, s_west);
 		AddValidMoveForDirection(position, s_north, s_east);
 		AddValidJumpForDirection(position, s_north, s_west);
 		AddValidJumpForDirection(position, s_north, s_east);
 		break;
-	case WHITE:
+	case EntityType::WHITE:
 		// Look for jumps and move looking South East and South West.
 		AddValidMoveForDirection(position, s_south, s_west);
 		AddValidJumpForDirection(position, s_south, s_west);
 		AddValidMoveForDirection(position, s_south, s_east);
 		AddValidJumpForDirection(position, s_south, s_east);
 		break;
-	case BLACK_KING:
-	case WHITE_KING:
+	case EntityType::BLACK_KING:
+	case EntityType::WHITE_KING:
 		// Look for jumps and moves in all directions.
 		AddValidMoveForDirection(position, s_north, s_west);
 		AddValidMoveForDirection(position, s_north, s_east);
@@ -281,7 +281,7 @@ void Game::EvaluatePossibleMovesForIndex(const Position& position)
 		AddValidJumpForDirection(position, s_south, s_west);
 		AddValidJumpForDirection(position, s_south, s_east);
 		break;
-	case EMPTY:
+	case EntityType::EMPTY:
 	default:
 		break;
 	}
@@ -353,8 +353,8 @@ void Game::AddValidJumpsFromJump(const CheckersMove& currentMove,
 		AddValidJumpForDirection(destination, direction.y, invertedDirection.x);
 	}
 
-	if (GetPieceForIndex(currentMove.GetDestination()) == BLACK_KING
-		|| GetPieceForIndex(currentMove.GetDestination()) == WHITE_KING)
+	if (GetPieceForIndex(currentMove.GetDestination()) == EntityType::BLACK_KING
+		|| GetPieceForIndex(currentMove.GetDestination()) == EntityType::WHITE_KING)
 	{
 		Position lookaheadVerticalInverted = GetTranslatedMove(currentMove.GetDestination(),
 			invertedDirection.y, direction.x);
@@ -395,24 +395,24 @@ EntityType Game::GetPieceForMove(const CheckersMove& move) const
 {
 	switch (GetPieceForIndex(move.GetSource()))
 	{
-	case WHITE:
+	case EntityType::WHITE:
 		if (IsKingableIndex(move.GetDestination()))
-			return WHITE_KING;
-		return WHITE;
+			return EntityType::WHITE_KING;
+		return EntityType::WHITE;
 		break;
-	case BLACK:
+	case EntityType::BLACK:
 		if (IsKingableIndex(move.GetDestination()))
-			return BLACK_KING;
-		return BLACK;
+			return EntityType::BLACK_KING;
+		return EntityType::BLACK;
 		break;
-	case BLACK_KING:
-		return BLACK_KING;
+	case EntityType::BLACK_KING:
+		return EntityType::BLACK_KING;
 		break;
-	case WHITE_KING:
-		return WHITE_KING;
+	case EntityType::WHITE_KING:
+		return EntityType::WHITE_KING;
 		break;
 	default:
-		return INVALID;
+		return EntityType::INVALID;
 		break;
 	}
 }
